@@ -1,0 +1,79 @@
+package seleniumL1;
+import jxl.Sheet;
+import jxl.Workbook;
+import java.io.File;
+import org.testng.annotations.Test;
+import org.testng.annotations.BeforeMethod;
+import org.testng.annotations.AfterMethod;
+import org.testng.annotations.DataProvider;
+import org.testng.annotations.BeforeClass;
+import org.openqa.selenium.By;
+import org.openqa.selenium.WebDriver;
+import org.openqa.selenium.WebElement;
+import org.openqa.selenium.chrome.ChromeDriver;
+import org.testng.annotations.AfterClass;
+import org.testng.annotations.BeforeTest;
+import org.testng.annotations.AfterTest;
+import org.testng.annotations.BeforeSuite;
+import org.testng.annotations.AfterSuite;
+
+public class NewTest1 {
+	WebDriver driver;
+	Workbook wb;
+	Sheet sh;
+	int numrow;
+  @Test(dataProvider = "loginData")
+  public void testLogin(String username, String password) {
+	  driver.findElement(By.xpath("//*[@id=\"top-links\"]/ul/li[2]/a")).click();
+	  driver.findElement(By.xpath("//*[@id=\"top-links\"]/ul/li[2]/ul/li[2]/a")).click();
+	  driver.findElement(By.id("input-email")).clear();
+	  driver.findElement(By.id("input-email")).sendKeys(username);
+	  driver.findElement(By.id("input-password")).clear();
+	  driver.findElement(By.id("input-password")).sendKeys(password);
+	  WebElement login = driver.findElement(By.xpath("//*[@id=\"content\"]/div/div[2]/div/form/input"));
+	  login.click();
+	  driver.findElement(By.xpath("//*[@id=\"column-right\"]/div/a[13]")).click();
+	  
+  }
+  @BeforeMethod
+  public void beforeMethod() {
+	  driver.get("https://demo.opencart.com/");
+  }
+
+  @DataProvider(name = "loginData")
+  public Object[][] dp() throws Exception{
+	  try {
+		  wb = Workbook.getWorkbook(new File("G:\\WIMS\\Rutadeep_Selenium\\Login.xls"));
+		  sh = wb.getSheet(0);
+		  numrow = sh.getRows();
+		  
+	  }
+	  catch(Exception e){
+		  e.printStackTrace();
+	  }
+	  //Create 2d array to store data
+	  Object[][] data = new Object[numrow][sh.getColumns()];
+	  for(int i=0;i<numrow;i++) {
+		  //Fetching Username
+		  data[i][0]= sh.getCell(0,i).getContents();
+		  
+		//Fetching PAssword
+		  data[i][1] = sh.getCell(1,i).getContents();
+	
+	  }
+	return data;
+  }
+
+  @BeforeTest
+  public void beforeTest() {
+	  System.setProperty("webdriver.chrome.driver", "G:\\WIMS\\Rutadeep_Selenium\\chromedriver_win32 (100)\\chromedriver.exe");
+	  driver = new ChromeDriver();
+	  driver.manage().window().maximize();
+  }
+
+  @AfterTest
+  public void afterTest() {
+	  driver.close();
+  }
+
+}
